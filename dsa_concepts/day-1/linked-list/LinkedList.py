@@ -1,87 +1,106 @@
 class Node:
-    def __init__(self, data=None, next=None):
-        self.data = data
-        self.next = next
+    def __init__(self, item=None, next=None):
+        self.item=item
+        self.next=next
 
-class LinkedList:
-    def __init__(self):
-        self.head = None
+class SLL:
+    def __init__(self, start=None):
+        self.start=start
     
-    def insert_at_begining(self, data):
-        node = Node(data, self.head)
-        self.head = node
+    def is_empty(self):
+        return self.start==None
     
-    def insert_at_ending(self, data):
-        if self.head is None:
-            self.head = Node(data, None)
-            return
-        itr = self.head
-        while itr.next:
-            itr = itr.next
-        
-        itr.next = Node(data, None)
+    def print_sll(self):
+        temp = self.start
+        while temp is not None:
+            print(str(temp.item),end='-->')
+            temp = temp.next
+        print("None")
+    
+    def insert_at_start(self, data):
+        node=Node(data, self.start)
+        self.start = node
 
-    def length_of_ll(self):
-        count = 0
-        itr = self.head
-        while itr.next:
-            itr = itr.next
-            count += 1
-        return count
-
-    def insert_values(self, data):
-        self.head = None
-        for item in data:
-            self.insert_at_ending(item)
-    
-    def insert_at(self, data, index):
-        if index < 0 or index > self.length_of_ll():
-            raise Exception('Invalid index')
-        if index == 0:
-            self.insert_at_begining(data, self.head)
-            return
+    def insert_at_end(self, data):
+        node=Node(data,None)
+        if not self.is_empty():
+            temp=self.start
+            while temp.next is not None:
+                temp=temp.next
+            temp.next=node
         else:
-            itr = self.head
-            count = 0
-            while itr.next:
-                if count == index - 1:
-                    node = Node(data, itr.next)
-                    itr.next = node
-                itr = itr.next
-                count += 1
+            self.start=node
     
-    def remove_at(self, index):
-        if index < 0 or index > self.length_of_ll():
-            raise Exception('Invalid index')
-        if index == 0:
-            self.head = self.head.next
-        itr = self.head
-        count = 0
-        while itr.next:
-            if count == index - 1:
-                itr.next = itr.next.next
-                break
-            itr = itr.next
-            count += 1
+    def search(self, data):
+        temp=self.start
+        while temp is not None:
+            if temp.item == data:
+                return temp
+            temp=temp.next
+        return False
+    
+    def insert_after(self, item, data):
+        if item is not None:
+            node=Node(data, item.next)
+            item.next=node
+    
+    def delete_first(self):
+        if self.start is not None:
+            self.start=self.start.next
+    
+    def delete_end(self):
+        if self.start is None:
+            pass
+        else:
+            if self.start.next is None:
+                self.start = None
+                return
+            temp = self.start
+            while temp.next.next is not None:
+                temp=temp.next
+            temp.next=None
 
-    def print(self):
-        if self.head is None:
-            print('Linked list is empty')
-            return
-        itr = self.head
-        llstr = ''
-        while itr:
-            llstr += str(itr.data) + '-->'
-            itr = itr.next
-        print(llstr)
-        return
-        
-if __name__ == '__main__':
-    ll = LinkedList()
-    ll.insert_values(['vinod', 'kumar', 'arjun', 'mouni'])
-    ll.print()
-    ll.insert_at('raghava', 2)
-    ll.print()
-    ll.remove_at(2)
-    ll.remove_at(22)
-    ll.print()
+    def delete_item(self, item):
+        if self.start is None:
+            pass
+        elif self.start.next is None:
+            if self.start.item == item:
+                self.start=None
+        else:
+            temp=self.start
+            if temp.item==item:
+                self.start=temp.next
+                return
+            else:
+                while temp.next is not None:
+                    if temp.next.item==item:
+                        temp.next=temp.next.next
+                        break
+                    temp=temp.next
+
+    def __iter__(self):
+        return SLLIterator(self.start)
+    
+class SLLIterator:
+    def __init__(self,start):
+        self.current=start
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if not self.current:
+            raise StopIteration
+        data=self.current.item
+        self.current=self.current.next
+        return data
+
+sll = SLL()
+sll.insert_at_start(9)
+sll.insert_at_start(10)
+sll.insert_at_start(5)
+sll.insert_at_end(8)
+sll.insert_at_end(43)
+sll.insert_at_end(51)
+sll.insert_at_end(90)
+sll.insert_after(sll.search(51), 74)
+for x in sll:
+    print(x,end=" ")
